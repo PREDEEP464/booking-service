@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.time.temporal.ChronoUnit;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -70,6 +71,56 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    public List<FlightBookingResponse> getFlightBookings(
+            BookingStatus status,
+            String reference
+    ) {
+
+        List<Booking> bookings;
+
+        if (status != null && reference != null && !reference.isBlank()) {
+
+            bookings =
+                    bookingRepository
+                            .findByBookingTypeAndStatusAndBookingReferenceContainingIgnoreCase(
+                                    BookingType.FLIGHT,
+                                    status,
+                                    reference
+                            );
+
+        } else if (status != null) {
+
+            bookings =
+                    bookingRepository
+                            .findByBookingTypeAndStatus(
+                                    BookingType.FLIGHT,
+                                    status
+                            );
+
+        } else if (reference != null && !reference.isBlank()) {
+
+            bookings =
+                    bookingRepository
+                            .findByBookingTypeAndBookingReferenceContainingIgnoreCase(
+                                    BookingType.FLIGHT,
+                                    reference
+                            );
+
+        } else {
+
+            bookings =
+                    bookingRepository
+                            .findByBookingType(
+                                    BookingType.FLIGHT
+                            );
+        }
+
+        return bookings.stream()
+                .map(this::mapToFlightResponse)
+                .toList();
+    }
+
+    @Override
     public HotelBookingResponse createHotelBooking(
             BookingRequest request
     ) {
@@ -110,6 +161,56 @@ public class BookingServiceImpl implements BookingService {
                 bookingRepository.save(booking);
 
         return mapToHotelResponse(savedBooking);
+    }
+
+    @Override
+    public List<HotelBookingResponse> getHotelBookings(
+            BookingStatus status,
+            String reference
+    ) {
+
+        List<Booking> bookings;
+
+        if (status != null && reference != null && !reference.isBlank()) {
+
+            bookings =
+                    bookingRepository
+                            .findByBookingTypeAndStatusAndBookingReferenceContainingIgnoreCase(
+                                    BookingType.HOTEL,
+                                    status,
+                                    reference
+                            );
+
+        } else if (status != null) {
+
+            bookings =
+                    bookingRepository
+                            .findByBookingTypeAndStatus(
+                                    BookingType.HOTEL,
+                                    status
+                            );
+
+        } else if (reference != null && !reference.isBlank()) {
+
+            bookings =
+                    bookingRepository
+                            .findByBookingTypeAndBookingReferenceContainingIgnoreCase(
+                                    BookingType.HOTEL,
+                                    reference
+                            );
+
+        } else {
+
+            bookings =
+                    bookingRepository
+                            .findByBookingType(
+                                    BookingType.HOTEL
+                            );
+        }
+
+        return bookings.stream()
+                .map(this::mapToHotelResponse)
+                .toList();
     }
 
     @Override

@@ -1,8 +1,11 @@
 package com.travelbooking.booking.controller;
 
+import java.util.List;
+
 import com.travelbooking.booking.model.entity.request.BookingRequest;
 import com.travelbooking.booking.model.entity.response.FlightBookingResponse;
 import com.travelbooking.booking.model.entity.response.HotelBookingResponse;
+import com.travelbooking.booking.model.entity.BookingStatus;
 import com.travelbooking.booking.model.entity.vo.ApiResponse;
 import com.travelbooking.booking.service.BookingService;
 import jakarta.validation.Valid;
@@ -36,6 +39,26 @@ public class BookingController {
                 );
     }
 
+    @GetMapping("/flights")
+    public ResponseEntity<ApiResponse<List<FlightBookingResponse>>> getFlightBookings(
+            @RequestParam(required = false) BookingStatus status,
+            @RequestParam(required = false) String reference
+    ) {
+
+        List<FlightBookingResponse> response =
+                bookingService.getFlightBookings(
+                        status,
+                        reference
+                );
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        "Flight bookings fetched successfully",
+                        response
+                )
+        );
+    }
+
     @PostMapping("/hotels")
     public ResponseEntity<ApiResponse<HotelBookingResponse>> createHotelBooking(
             @Valid @RequestBody BookingRequest request
@@ -52,6 +75,26 @@ public class BookingController {
                                 response
                         )
                 );
+    }
+
+    @GetMapping("/hotels")
+    public ResponseEntity<ApiResponse<List<HotelBookingResponse>>> getHotelBookings(
+            @RequestParam(required = false) BookingStatus status,
+            @RequestParam(required = false) String reference
+    ) {
+
+        List<HotelBookingResponse> response =
+                bookingService.getHotelBookings(
+                        status,
+                        reference
+                );
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        "Hotel bookings fetched successfully",
+                        response
+                )
+        );
     }
 
     @GetMapping("/flights/{id}")
