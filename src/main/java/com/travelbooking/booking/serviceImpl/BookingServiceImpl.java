@@ -13,6 +13,7 @@ import com.travelbooking.booking.model.entity.Booking;
 import com.travelbooking.booking.model.entity.BookingStatus;
 import com.travelbooking.booking.model.entity.BookingType;
 import com.travelbooking.booking.model.entity.request.BookingRequest;
+import com.travelbooking.booking.producer.BookingEventProducer;
 import com.travelbooking.booking.model.entity.response.FlightBookingResponse;
 import com.travelbooking.booking.model.entity.response.HotelBookingResponse;
 import com.travelbooking.booking.service.BookingService;
@@ -32,6 +33,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final FlightServiceClient flightServiceClient;
     private final HotelServiceClient hotelServiceClient;
+    private final BookingEventProducer bookingEventProducer;
 
     @Override
     public FlightBookingResponse createFlightBooking(
@@ -66,6 +68,8 @@ public class BookingServiceImpl implements BookingService {
 
         Booking savedBooking =
                 bookingRepository.save(booking);
+
+        bookingEventProducer.publishBookingCreated(savedBooking);
 
         return mapToFlightResponse(savedBooking);
     }
@@ -159,6 +163,8 @@ public class BookingServiceImpl implements BookingService {
 
         Booking savedBooking =
                 bookingRepository.save(booking);
+
+        bookingEventProducer.publishBookingCreated(savedBooking);
 
         return mapToHotelResponse(savedBooking);
     }
@@ -315,6 +321,8 @@ public class BookingServiceImpl implements BookingService {
         Booking updatedBooking =
                 bookingRepository.save(booking);
 
+        bookingEventProducer.publishBookingCancelled(updatedBooking);
+
         return mapToFlightResponse(updatedBooking);
     }
 
@@ -358,6 +366,8 @@ public class BookingServiceImpl implements BookingService {
 
         Booking updatedBooking =
                 bookingRepository.save(booking);
+
+        bookingEventProducer.publishBookingCancelled(updatedBooking);
 
         return mapToHotelResponse(updatedBooking);
     }
@@ -545,6 +555,8 @@ public class BookingServiceImpl implements BookingService {
         Booking savedBooking =
                 bookingRepository.save(booking);
 
+        bookingEventProducer.publishBookingConfirmed(savedBooking);
+
         return mapToFlightResponse(savedBooking);
     }
 
@@ -585,6 +597,8 @@ public class BookingServiceImpl implements BookingService {
 
         Booking savedBooking =
                 bookingRepository.save(booking);
+
+        bookingEventProducer.publishBookingConfirmed(savedBooking);
 
         return mapToHotelResponse(savedBooking);
     }
