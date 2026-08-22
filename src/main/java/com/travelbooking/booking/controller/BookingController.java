@@ -160,4 +160,38 @@ public class BookingController {
                 )
         );
     }
+
+    @PatchMapping("/flights/{id}/confirm")
+    public ResponseEntity<ApiResponse<FlightBookingResponse>>
+    confirmFlightBooking(
+            @PathVariable String id
+    ) {
+
+        FlightBookingResponse response =
+                bookingService.confirmFlightBooking(id);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        "Flight booking confirmed successfully",
+                        response
+                )
+        );
+    }
+
+    @PatchMapping("/hotels/{id}/confirm")
+    public ResponseEntity<ApiResponse<HotelBookingResponse>>
+    confirmHotelBooking(
+            @PathVariable String id
+    ) {
+
+        HotelBookingResponse response =
+                bookingService.confirmHotelBooking(id);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        "Hotel booking confirmed successfully",
+                        response
+                )
+        );
+    }
 }

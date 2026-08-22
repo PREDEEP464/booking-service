@@ -50,4 +50,8 @@ public interface BookingService {
             BookingStatus status,
             String reference
     );
+
+    FlightBookingResponse confirmFlightBooking(String id);
+
+    HotelBookingResponse confirmHotelBooking(String id);
 }

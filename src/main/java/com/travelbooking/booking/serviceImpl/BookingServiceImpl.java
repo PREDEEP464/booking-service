@@ -509,4 +509,85 @@ public class BookingServiceImpl implements BookingService {
                 booking.getCreatedAt()
         );
     }
+
+    @Override
+    public FlightBookingResponse confirmFlightBooking(String id) {
+
+        Booking booking =
+                bookingRepository.findById(id)
+                        .orElseThrow(
+                                () -> new BookingNotFoundException(
+                                        "Flight booking not found"
+                                )
+                        );
+
+        if (booking.getBookingType() != BookingType.FLIGHT) {
+            throw new InvalidBookingStateException(
+                    "Booking is not a flight booking"
+            );
+        }
+
+        if (booking.getStatus() != BookingStatus.PENDING) {
+            throw new InvalidBookingStateException(
+                    "Only pending bookings can be confirmed"
+            );
+        }
+
+        flightServiceClient.confirmSeats(
+                new FlightSeatRequest(
+                        booking.getFlightId(),
+                        booking.getSeats()
+                )
+        );
+
+        booking.setStatus(BookingStatus.CONFIRMED);
+
+        Booking savedBooking =
+                bookingRepository.save(booking);
+
+        return mapToFlightResponse(savedBooking);
+    }
+
+    @Override
+    public HotelBookingResponse confirmHotelBooking(String id) {
+
+        Booking booking =
+                bookingRepository.findById(id)
+                        .orElseThrow(
+                                () -> new BookingNotFoundException(
+                                        "Hotel booking not found"
+                                )
+                        );
+
+        if (booking.getBookingType() != BookingType.HOTEL) {
+            throw new InvalidBookingStateException(
+                    "Booking is not a hotel booking"
+            );
+        }
+
+        if (booking.getStatus() != BookingStatus.PENDING) {
+            throw new InvalidBookingStateException(
+                    "Only pending bookings can be confirmed"
+            );
+        }
+
+        hotelServiceClient.confirmRooms(
+                new HotelRoomBookingRequest(
+                        booking.getHotelId(),
+                        booking.getRoomTypeId(),
+                        booking.getCheckInDate(),
+                        booking.getCheckOutDate(),
+                        booking.getRooms()
+                )
+        );
+
+        booking.setStatus(BookingStatus.CONFIRMED);
+
+        Booking savedBooking =
+                bookingRepository.save(booking);
+
+        return mapToHotelResponse(savedBooking);
+    }
+
+
 }
