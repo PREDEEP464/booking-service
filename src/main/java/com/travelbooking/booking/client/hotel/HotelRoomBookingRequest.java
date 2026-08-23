@@ -1,5 +1,6 @@
 package com.travelbooking.booking.client.hotel;
 
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,5 +20,6 @@ public class HotelRoomBookingRequest {
 
     private LocalDate checkOutDate;
 
+    @Min(value = 1, message = "At least one seat is required")
     private Integer rooms;
 }
