@@ -64,10 +64,6 @@ public class BookingEventProducer {
                     message
             );
 
-            System.out.println(
-                    "Kafka event published: " + message
-            );
-
         } catch (JsonProcessingException e) {
 
             throw new RuntimeException(

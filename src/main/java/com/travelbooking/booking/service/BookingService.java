@@ -4,8 +4,7 @@ import com.travelbooking.booking.model.entity.BookingStatus;
 import com.travelbooking.booking.model.entity.request.BookingRequest;
 import com.travelbooking.booking.model.entity.response.FlightBookingResponse;
 import com.travelbooking.booking.model.entity.response.HotelBookingResponse;
-
-import java.util.List;
+import com.travelbooking.booking.model.entity.vo.PagedResponseVo;
 
 public interface BookingService {
 
@@ -41,17 +40,29 @@ public interface BookingService {
             String id
     );
 
-    List<FlightBookingResponse> getFlightBookings(
-            BookingStatus status,
-            String reference
+    FlightBookingResponse confirmFlightBooking(
+            String id
     );
 
-    List<HotelBookingResponse> getHotelBookings(
-            BookingStatus status,
-            String reference
+    HotelBookingResponse confirmHotelBooking(
+            String id
     );
 
-    FlightBookingResponse confirmFlightBooking(String id);
+    PagedResponseVo<FlightBookingResponse> getFlightBookings(
+            BookingStatus status,
+            String reference,
+            int page,
+            int size,
+            String sortBy,
+            String sortDir
+    );
 
-    HotelBookingResponse confirmHotelBooking(String id);
+    PagedResponseVo<HotelBookingResponse> getHotelBookings(
+            BookingStatus status,
+            String reference,
+            int page,
+            int size,
+            String sortBy,
+            String sortDir
+    );
 }

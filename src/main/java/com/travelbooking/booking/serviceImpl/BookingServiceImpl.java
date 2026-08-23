@@ -17,8 +17,14 @@ import com.travelbooking.booking.producer.BookingEventProducer;
 import com.travelbooking.booking.model.entity.response.FlightBookingResponse;
 import com.travelbooking.booking.model.entity.response.HotelBookingResponse;
 import com.travelbooking.booking.service.BookingService;
+import com.travelbooking.booking.model.entity.vo.PagedResponseVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -75,12 +81,23 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<FlightBookingResponse> getFlightBookings(
+    public PagedResponseVo<FlightBookingResponse> getFlightBookings(
             BookingStatus status,
-            String reference
+            String reference,
+            int page,
+            int size,
+            String sortBy,
+            String sortDir
     ) {
 
-        List<Booking> bookings;
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable =
+                PageRequest.of(page, size, sort);
+
+        Page<Booking> bookings;
 
         if (status != null && reference != null && !reference.isBlank()) {
 
@@ -89,7 +106,8 @@ public class BookingServiceImpl implements BookingService {
                             .findByBookingTypeAndStatusAndBookingReferenceContainingIgnoreCase(
                                     BookingType.FLIGHT,
                                     status,
-                                    reference
+                                    reference,
+                                    pageable
                             );
 
         } else if (status != null) {
@@ -98,7 +116,8 @@ public class BookingServiceImpl implements BookingService {
                     bookingRepository
                             .findByBookingTypeAndStatus(
                                     BookingType.FLIGHT,
-                                    status
+                                    status,
+                                    pageable
                             );
 
         } else if (reference != null && !reference.isBlank()) {
@@ -107,7 +126,8 @@ public class BookingServiceImpl implements BookingService {
                     bookingRepository
                             .findByBookingTypeAndBookingReferenceContainingIgnoreCase(
                                     BookingType.FLIGHT,
-                                    reference
+                                    reference,
+                                    pageable
                             );
 
         } else {
@@ -115,13 +135,26 @@ public class BookingServiceImpl implements BookingService {
             bookings =
                     bookingRepository
                             .findByBookingType(
-                                    BookingType.FLIGHT
+                                    BookingType.FLIGHT,
+                                    pageable
                             );
         }
 
-        return bookings.stream()
-                .map(this::mapToFlightResponse)
-                .toList();
+        List<FlightBookingResponse> content =
+                bookings.getContent()
+                        .stream()
+                        .map(this::mapToFlightResponse)
+                        .toList();
+
+        return new PagedResponseVo<>(
+                content,
+                bookings.getNumber(),
+                bookings.getSize(),
+                bookings.getTotalElements(),
+                bookings.getTotalPages(),
+                bookings.isFirst(),
+                bookings.isLast()
+        );
     }
 
     @Override
@@ -170,12 +203,23 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<HotelBookingResponse> getHotelBookings(
+    public PagedResponseVo<HotelBookingResponse> getHotelBookings(
             BookingStatus status,
-            String reference
+            String reference,
+            int page,
+            int size,
+            String sortBy,
+            String sortDir
     ) {
 
-        List<Booking> bookings;
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable =
+                PageRequest.of(page, size, sort);
+
+        Page<Booking> bookings;
 
         if (status != null && reference != null && !reference.isBlank()) {
 
@@ -184,7 +228,8 @@ public class BookingServiceImpl implements BookingService {
                             .findByBookingTypeAndStatusAndBookingReferenceContainingIgnoreCase(
                                     BookingType.HOTEL,
                                     status,
-                                    reference
+                                    reference,
+                                    pageable
                             );
 
         } else if (status != null) {
@@ -193,7 +238,8 @@ public class BookingServiceImpl implements BookingService {
                     bookingRepository
                             .findByBookingTypeAndStatus(
                                     BookingType.HOTEL,
-                                    status
+                                    status,
+                                    pageable
                             );
 
         } else if (reference != null && !reference.isBlank()) {
@@ -202,7 +248,8 @@ public class BookingServiceImpl implements BookingService {
                     bookingRepository
                             .findByBookingTypeAndBookingReferenceContainingIgnoreCase(
                                     BookingType.HOTEL,
-                                    reference
+                                    reference,
+                                    pageable
                             );
 
         } else {
@@ -210,13 +257,26 @@ public class BookingServiceImpl implements BookingService {
             bookings =
                     bookingRepository
                             .findByBookingType(
-                                    BookingType.HOTEL
+                                    BookingType.HOTEL,
+                                    pageable
                             );
         }
 
-        return bookings.stream()
-                .map(this::mapToHotelResponse)
-                .toList();
+        List<HotelBookingResponse> content =
+                bookings.getContent()
+                        .stream()
+                        .map(this::mapToHotelResponse)
+                        .toList();
+
+        return new PagedResponseVo<>(
+                content,
+                bookings.getNumber(),
+                bookings.getSize(),
+                bookings.getTotalElements(),
+                bookings.getTotalPages(),
+                bookings.isFirst(),
+                bookings.isLast()
+        );
     }
 
     @Override

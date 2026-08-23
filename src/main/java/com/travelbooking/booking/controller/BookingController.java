@@ -7,6 +7,7 @@ import com.travelbooking.booking.model.entity.response.FlightBookingResponse;
 import com.travelbooking.booking.model.entity.response.HotelBookingResponse;
 import com.travelbooking.booking.model.entity.BookingStatus;
 import com.travelbooking.booking.model.entity.vo.ApiResponse;
+import com.travelbooking.booking.model.entity.vo.PagedResponseVo;
 import com.travelbooking.booking.service.BookingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,15 +41,23 @@ public class BookingController {
     }
 
     @GetMapping("/flights")
-    public ResponseEntity<ApiResponse<List<FlightBookingResponse>>> getFlightBookings(
+    public ResponseEntity<ApiResponse<PagedResponseVo<FlightBookingResponse>>> getFlightBookings(
             @RequestParam(required = false) BookingStatus status,
-            @RequestParam(required = false) String reference
+            @RequestParam(required = false) String reference,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
     ) {
 
-        List<FlightBookingResponse> response =
+        PagedResponseVo<FlightBookingResponse> response =
                 bookingService.getFlightBookings(
                         status,
-                        reference
+                        reference,
+                        page,
+                        size,
+                        sortBy,
+                        sortDir
                 );
 
         return ResponseEntity.ok(
@@ -78,15 +87,23 @@ public class BookingController {
     }
 
     @GetMapping("/hotels")
-    public ResponseEntity<ApiResponse<List<HotelBookingResponse>>> getHotelBookings(
+    public ResponseEntity<ApiResponse<PagedResponseVo<HotelBookingResponse>>> getHotelBookings(
             @RequestParam(required = false) BookingStatus status,
-            @RequestParam(required = false) String reference
+            @RequestParam(required = false) String reference,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
     ) {
 
-        List<HotelBookingResponse> response =
+        PagedResponseVo<HotelBookingResponse> response =
                 bookingService.getHotelBookings(
                         status,
-                        reference
+                        reference,
+                        page,
+                        size,
+                        sortBy,
+                        sortDir
                 );
 
         return ResponseEntity.ok(
